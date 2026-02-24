@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Smart Search Router",
+  "version": "1.0.0",
+  "description": "Automatically routes searches to Baidu when Google is inaccessible",
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "storage",
+    "alarms",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "*://smartsearch.local/*",
+    "https://www.google.com/generate_204"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "chrome_settings_overrides": {
+    "search_provider": {
+      "name": "Smart Search",
+      "keyword": "ss",
+      "search_url": "http://smartsearch.local/?q={searchTerms}",
+      "favicon_url": "https://www.google.com/favicon.ico",
+      "encoding": "UTF-8",
+      "is_default": false
+    }
+  }
+}

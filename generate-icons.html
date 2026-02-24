@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Icon Generator - Smart Search Router</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #667eea;
+    }
+    .canvas-container {
+      margin: 20px 0;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .canvas-item {
+      text-align: center;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      display: block;
+      margin: 10px 0;
+    }
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    button:hover {
+      background: #5568d3;
+    }
+    .instructions {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Smart Search Router - Icon Generator</h1>
+
+  <div class="instructions">
+    <h3>Instructions:</h3>
+    <ol>
+      <li>Click the "Download" button under each icon size</li>
+      <li>Save the files as:
+        <ul>
+          <li>icon16.png</li>
+          <li>icon48.png</li>
+          <li>icon128.png</li>
+        </ul>
+      </li>
+      <li>Place all three files in the <code>icons/</code> directory</li>
+      <li>Reload the extension in Chrome</li>
+    </ol>
+  </div>
+
+  <div class="canvas-container">
+    <div class="canvas-item">
+      <h3>16x16</h3>
+      <canvas id="canvas16" width="16" height="16"></canvas>
+      <button onclick="downloadIcon('canvas16', 'icon16.png')">Download icon16.png</button>
+    </div>
+
+    <div class="canvas-item">
+      <h3>48x48</h3>
+      <canvas id="canvas48" width="48" height="48"></canvas>
+      <button onclick="downloadIcon('canvas48', 'icon48.png')">Download icon48.png</button>
+    </div>
+
+    <div class="canvas-item">
+      <h3>128x128</h3>
+      <canvas id="canvas128" width="128" height="128"></canvas>
+      <button onclick="downloadIcon('canvas128', 'icon128.png')">Download icon128.png</button>
+    </div>
+  </div>
+
+  <script>
+    function drawIcon(canvas) {
+      const ctx = canvas.getContext('2d');
+      const size = canvas.width;
+
+      // Background with gradient
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#667eea');
+      gradient.addColorStop(1, '#764ba2');
+      ctx.fillStyle = gradient;
+
+      // Rounded rectangle background
+      const radius = size * 0.2;
+      ctx.beginPath();
+      ctx.moveTo(radius, 0);
+      ctx.lineTo(size - radius, 0);
+      ctx.quadraticCurveTo(size, 0, size, radius);
+      ctx.lineTo(size, size - radius);
+      ctx.quadraticCurveTo(size, size, size - radius, size);
+      ctx.lineTo(radius, size);
+      ctx.quadraticCurveTo(0, size, 0, size - radius);
+      ctx.lineTo(0, radius);
+      ctx.quadraticCurveTo(0, 0, radius, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      // Draw routing symbol
+      ctx.fillStyle = 'white';
+      ctx.strokeStyle = 'white';
+
+      // Left circle (Google)
+      const leftX = size * 0.35;
+      const centerY = size * 0.5;
+      const circleRadius = size * 0.15;
+      ctx.beginPath();
+      ctx.arc(leftX, centerY, circleRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Right circle (Baidu)
+      const rightX = size * 0.65;
+      ctx.beginPath();
+      ctx.arc(rightX, centerY, circleRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Arrow between circles
+      const arrowWidth = size * 0.06;
+      const arrowLength = rightX - leftX - circleRadius * 2;
+      const arrowX = leftX + circleRadius;
+
+      ctx.lineWidth = arrowWidth;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(arrowX, centerY);
+      ctx.lineTo(rightX - circleRadius, centerY);
+      ctx.stroke();
+
+      // Arrow head
+      const headSize = size * 0.12;
+      ctx.fillStyle = 'white';
+      ctx.beginPath();
+      ctx.moveTo(rightX - circleRadius, centerY);
+      ctx.lineTo(rightX - circleRadius - headSize, centerY - headSize * 0.5);
+      ctx.lineTo(rightX - circleRadius - headSize, centerY + headSize * 0.5);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function downloadIcon(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // Draw all icons on page load
+    window.addEventListener('load', () => {
+      drawIcon(document.getElementById('canvas16'));
+      drawIcon(document.getElementById('canvas48'));
+      drawIcon(document.getElementById('canvas128'));
+    });
+  </script>
+</body>
+</html>
