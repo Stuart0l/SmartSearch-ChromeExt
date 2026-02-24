@@ -1,8 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Smart Search Router",
+  "short_name": "Smart Search",
   "version": "1.0.0",
-  "description": "Automatically routes searches to Baidu when Google is inaccessible",
+  "description": "Automatically routes your searches to Google or Baidu based on real-time network accessibility. Perfect for users in regions where Google availability varies.",
+  "author": "Stuart Luo",
+  "homepage_url": "https://github.com/Stuart0l/SmartSearch-ChromeExt",
   "permissions": [
     "declarativeNetRequest",
     "declarativeNetRequestWithHostAccess",
@@ -29,15 +32,5 @@
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
-  },
-  "chrome_settings_overrides": {
-    "search_provider": {
-      "name": "Smart Search",
-      "keyword": "ss",
-      "search_url": "http://smartsearch.local/?q={searchTerms}",
-      "favicon_url": "https://www.google.com/favicon.ico",
-      "encoding": "UTF-8",
-      "is_default": false
-    }
   }
 }

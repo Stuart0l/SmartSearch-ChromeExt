@@ -15,7 +15,7 @@ A Chrome extension that automatically routes your searches to Baidu when Google 
 
 ## How It Works
 
-1. You add a custom search engine to Chrome named "Smart Search" (URL: `http://smartsearch.local/?q=%s`)
+1. You add a custom search engine to Chrome named "Smart Search" (URL: `https://smartsearch.local/?q=%s`)
 2. Extension checks Google accessibility every 60 seconds in the background
 3. When you use Smart Search (either as default or via keyword), the extension intercepts the request
 4. Based on Google's accessibility, it routes your search to Google or Baidu
@@ -33,9 +33,9 @@ A Chrome extension that automatically routes your searches to Baidu when Google 
    - Generate icons using `generate-icons.html`
    - Load extension via `chrome://extensions/` → Load unpacked
 
-2. **Approve Search Engine** (automatic):
-   - The extension automatically adds "Smart Search" to Chrome
-   - Simply approve when Chrome asks
+2. **Add Search Engine** (one-time manual step):
+   - Go to `chrome://settings/searchEngines` → **Add** under "Site search"
+   - Name: `Smart Search`, Keyword: `ss`, URL: `https://smartsearch.local/?q=%s`
 
 3. **Use Smart Search**:
    - Set as default search engine, OR
@@ -102,14 +102,14 @@ The extension intercepts requests to the custom search engine URL and redirects 
 
 **When Google is accessible:**
 ```
-http://smartsearch.local/?q=QUERY
+https://smartsearch.local/?q=QUERY
   ↓
 https://www.google.com/search?q=QUERY
 ```
 
 **When Google is blocked:**
 ```
-http://smartsearch.local/?q=QUERY
+https://smartsearch.local/?q=QUERY
   ↓
 https://www.baidu.com/s?wd=QUERY
 ```
@@ -151,7 +151,7 @@ The extension requires the following permissions:
 - **alarms**: To schedule periodic accessibility checks
 - **webNavigation**: To detect failed navigation for quick revalidation
 - **host_permissions**:
-  - `http://smartsearch.local/*` - To intercept the custom search engine URL
+  - `*://smartsearch.local/*` - To intercept the custom search engine URL
   - `https://www.google.com/generate_204` - Only for connectivity testing (no search data accessed)
 
 ## Limitations
@@ -176,7 +176,7 @@ This means the extension is not loaded or doesn't have permissions:
 
 1. **Verify Custom Search Engine**:
    - Go to Chrome Settings → Search engine → Manage search engines
-   - Confirm URL is exactly: `http://smartsearch.local/?q=%s`
+   - Confirm URL is exactly: `https://smartsearch.local/?q=%s`
    - Check that you're using "Smart Search" (shown in address bar)
 
 2. **Check Extension Status**:

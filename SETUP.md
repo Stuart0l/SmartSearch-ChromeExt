@@ -26,19 +26,15 @@ The extension works by intercepting searches made through a **custom search engi
    - Click "Allow" when prompted for permissions
    - The extension needs access to `smartsearch.local` and Google's connectivity check endpoint
 
-### Step 2: Approve the Search Engine (Automatic!)
+### Step 2: Add the Search Engine (one-time manual step)
 
-The extension **automatically adds** the "Smart Search" search engine to Chrome when you install it!
-
-1. **After installing the extension**, Chrome may show a notification asking you to approve adding the new search engine
-   - Click **"Add"** or **"Keep it"** to approve
-
-2. **Verify it was added**:
-   - Go to Chrome Settings → Search engine → Manage search engines
-   - Look for **"Smart Search"** in the list (should have keyword `ss`)
-   - It should already be configured with URL: `http://smartsearch.local/?q=%s`
-
-**No manual configuration needed!** The extension handles this automatically.
+1. Go to `chrome://settings/searchEngines`
+2. Click **Add** in the "Site search" section
+3. Fill in:
+   - Search engine: `Smart Search`
+   - Keyword: `ss`
+   - URL: `https://smartsearch.local/?q=%s`
+4. Click **Add**
 
 ### Step 3: Set Smart Search as Default (Optional)
 
@@ -80,7 +76,7 @@ You have two options:
 ```
 User types search query
         ↓
-Chrome navigates to: http://smartsearch.local/?q=QUERY
+Chrome navigates to: https://smartsearch.local/?q=QUERY
         ↓
 Extension intercepts the request
         ↓
@@ -118,24 +114,9 @@ Use the extension popup to manually force Baidu searches even when Google is acc
 
 ## Troubleshooting
 
-### Search Engine Not Added Automatically
+### Search Engine Missing
 
-If "Smart Search" doesn't appear in your search engines list:
-
-**Option 1 - Manual Add**:
-1. Go to Chrome Settings → Search engine → Manage search engines
-2. Click **Add** in the "Site search" section
-3. Fill in:
-   - Search engine: `Smart Search`
-   - Keyword: `ss`
-   - URL: `http://smartsearch.local/?q=%s`
-4. Click **Add**
-
-**Option 2 - Reload Extension**:
-1. Go to `chrome://extensions/`
-2. Find "Smart Search Router"
-3. Click the reload icon (🔄)
-4. Chrome should prompt you to add the search engine again
+If "Smart Search" doesn't appear in your search engines list, repeat Step 2: add it manually at `chrome://settings/searchEngines`.
 
 ### "This site can't be reached - smartsearch.local" Error
 
@@ -157,7 +138,7 @@ If you see this error, it means:
 **Check these items**:
 
 1. ✓ Extension is installed and enabled
-2. ✓ Custom search engine URL is exactly: `http://smartsearch.local/?q=%s`
+2. ✓ Custom search engine URL is exactly: `https://smartsearch.local/?q=%s`
 3. ✓ You're actually using the "Smart Search" engine (check address bar shows "Smart Search")
 4. ✓ Extension has necessary permissions
 
@@ -255,7 +236,7 @@ For issues or questions:
 ## Summary
 
 ✅ Install extension and generate icons
-✅ Add custom search engine with URL: `http://smartsearch.local/?q=%s`
+✅ Manually add search engine: name `Smart Search`, keyword `ss`, URL `https://smartsearch.local/?q=%s`
 ✅ Optionally set as default or use with `ss` keyword
 ✅ Extension automatically routes to Google or Baidu
 ✅ Monitor status via extension popup
