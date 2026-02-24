@@ -3,14 +3,22 @@
 
 const GOOGLE_CHECK_URL = 'https://www.google.com/generate_204';
 const CHECK_TIMEOUT = 3000; // 3 seconds
-const CHECK_INTERVAL = 60; // Check every 60 seconds
+const DEFAULT_CHECK_INTERVAL = 60; // seconds
 const REDIRECT_RULE_ID = 1;
 
 // Storage keys
 const STORAGE_KEYS = {
   GOOGLE_ACCESSIBLE: 'googleAccessible',
   LAST_CHECK_TIME: 'lastCheckTime',
-  MANUAL_OVERRIDE: 'manualOverride'
+  MANUAL_OVERRIDE: 'manualOverride',
+  CHECK_INTERVAL: 'checkInterval',
+  FALLBACK_ENGINE: 'fallbackEngine'
+};
+
+const FALLBACK_ENGINES = {
+  baidu: { name: 'Baidu', url: 'https://www.baidu.com/s?wd=\\1' },
+  bing:  { name: 'Bing',  url: 'https://www.bing.com/search?q=\\1' },
+  '360': { name: '360 Search', url: 'https://www.so.com/s?q=\\1' }
 };
 
 /**
@@ -72,6 +80,25 @@ async function getCachedAccessibility() {
 }
 
 /**
+ * Get configured check interval from storage
+ */
+async function getCheckInterval() {
+  const result = await chrome.storage.local.get(STORAGE_KEYS.CHECK_INTERVAL);
+  return result[STORAGE_KEYS.CHECK_INTERVAL] ?? DEFAULT_CHECK_INTERVAL;
+}
+
+/**
+ * (Re)schedule the periodic alarm with the given interval in seconds
+ */
+async function scheduleCheck(intervalSeconds) {
+  await chrome.alarms.clear('googleAccessibilityCheck');
+  chrome.alarms.create('googleAccessibilityCheck', {
+    periodInMinutes: intervalSeconds / 60
+  });
+  console.log(`[Smart Search Router] Check scheduled every ${intervalSeconds}s`);
+}
+
+/**
  * Add redirect rule to route custom search engine to Google
  */
 async function addGoogleRedirectRule() {
@@ -102,9 +129,10 @@ async function addGoogleRedirectRule() {
 }
 
 /**
- * Add redirect rule to route custom search engine to Baidu
+ * Add redirect rule to route custom search engine to the configured fallback engine
  */
-async function addBaiduRedirectRule() {
+async function addFallbackRedirectRule(engineId) {
+  const engine = FALLBACK_ENGINES[engineId] ?? FALLBACK_ENGINES.baidu;
   try {
     await chrome.declarativeNetRequest.updateDynamicRules({
       removeRuleIds: [REDIRECT_RULE_ID],
@@ -115,7 +143,7 @@ async function addBaiduRedirectRule() {
           action: {
             type: 'redirect',
             redirect: {
-              regexSubstitution: 'https://www.baidu.com/s?wd=\\1'
+              regexSubstitution: engine.url
             }
           },
           condition: {
@@ -125,7 +153,7 @@ async function addBaiduRedirectRule() {
         }
       ]
     });
-    console.log('[Smart Search Router] Redirect rule ADDED: SmartSearch → Baidu');
+    console.log(`[Smart Search Router] Redirect rule ADDED: SmartSearch → ${engine.name}`);
   } catch (error) {
     console.error('[Smart Search Router] Failed to add redirect rule:', error);
   }
@@ -135,14 +163,16 @@ async function addBaiduRedirectRule() {
  * Update redirect rules based on accessibility
  */
 async function updateRedirectRules(isAccessible) {
-  const { manualOverride } = await getCachedAccessibility();
+  const result = await chrome.storage.local.get([STORAGE_KEYS.MANUAL_OVERRIDE, STORAGE_KEYS.FALLBACK_ENGINE]);
+  const manualOverride = result[STORAGE_KEYS.MANUAL_OVERRIDE] ?? null;
+  const engineId = result[STORAGE_KEYS.FALLBACK_ENGINE] ?? 'baidu';
 
   // Manual override takes precedence
   if (manualOverride !== null) {
     if (manualOverride) {
       await addGoogleRedirectRule();
     } else {
-      await addBaiduRedirectRule();
+      await addFallbackRedirectRule(engineId);
     }
     return;
   }
@@ -151,7 +181,7 @@ async function updateRedirectRules(isAccessible) {
   if (isAccessible) {
     await addGoogleRedirectRule();
   } else {
-    await addBaiduRedirectRule();
+    await addFallbackRedirectRule(engineId);
   }
 }
 
@@ -178,9 +208,8 @@ async function initialize() {
   await performCheck();
 
   // Set up periodic checks using alarms API (more reliable for service workers)
-  chrome.alarms.create('googleAccessibilityCheck', {
-    periodInMinutes: CHECK_INTERVAL / 60
-  });
+  const interval = await getCheckInterval();
+  await scheduleCheck(interval);
 
   console.log('[Smart Search Router] Initialized successfully');
 }
@@ -208,7 +237,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.action === 'getStatus') {
     // Get current status
-    getCachedAccessibility().then((status) => {
+    getCachedAccessibility().then(async (status) => {
+      const result = await chrome.storage.local.get(STORAGE_KEYS.FALLBACK_ENGINE);
+      status.fallbackEngine = result[STORAGE_KEYS.FALLBACK_ENGINE] ?? 'baidu';
       sendResponse(status);
     });
     return true;
@@ -223,6 +254,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }).then(() => {
       sendResponse({ success: true });
     });
+    return true;
+  }
+
+  if (message.action === 'setCheckInterval') {
+    const interval = Math.max(60, parseInt(message.interval));
+    chrome.storage.local.set({ [STORAGE_KEYS.CHECK_INTERVAL]: interval })
+      .then(() => scheduleCheck(interval))
+      .then(() => sendResponse({ success: true }));
+    return true;
+  }
+
+  if (message.action === 'setFallbackEngine') {
+    chrome.storage.local.set({ [STORAGE_KEYS.FALLBACK_ENGINE]: message.engineId })
+      .then(() => performCheck())
+      .then(() => sendResponse({ success: true }));
     return true;
   }
 

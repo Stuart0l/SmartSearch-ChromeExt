@@ -12,57 +12,85 @@
       <h1>Smart Search Router</h1>
     </header>
 
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="status">Status</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
+    </nav>
+
     <main>
-      <div class="status-section">
-        <div class="status-indicator">
-          <div id="statusDot" class="status-dot unknown"></div>
-          <div class="status-text">
-            <div id="statusLabel" class="status-label">Checking...</div>
-            <div id="statusDetail" class="status-detail">Initializing</div>
+      <div id="tab-status" class="tab-panel active">
+        <div class="status-section">
+          <div class="status-indicator">
+            <div id="statusDot" class="status-dot unknown"></div>
+            <div class="status-text">
+              <div id="statusLabel" class="status-label">Checking...</div>
+              <div id="statusDetail" class="status-detail">Initializing</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="info-section">
-        <div class="info-row">
-          <span class="info-label">Active Search Engine:</span>
-          <span id="activeEngine" class="info-value">--</span>
+        <div class="info-section">
+          <div class="info-row">
+            <span class="info-label">Active Search Engine:</span>
+            <span id="activeEngine" class="info-value">--</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Last Check:</span>
+            <span id="lastCheck" class="info-value">Never</span>
+          </div>
         </div>
-        <div class="info-row">
-          <span class="info-label">Last Check:</span>
-          <span id="lastCheck" class="info-value">Never</span>
+
+        <div class="actions-section">
+          <button id="checkNowBtn" class="btn btn-primary">
+            <span class="btn-icon">🔄</span>
+            Check Now
+          </button>
+        </div>
+
+        <div class="manual-override-section">
+          <label class="toggle-label">
+            <input type="checkbox" id="manualOverrideToggle">
+            <span class="toggle-slider"></span>
+            <span id="overrideToggleText" class="toggle-text">Manual Override (Force Baidu)</span>
+          </label>
+        </div>
+
+        <div class="help-section">
+          <details>
+            <summary>How it works</summary>
+            <p>
+              This extension automatically detects if Google is accessible and routes your searches accordingly:
+            </p>
+            <ul>
+              <li><strong>Google accessible:</strong> Searches go directly to Google</li>
+              <li><strong>Google blocked:</strong> Searches are redirected to your configured fallback engine</li>
+            </ul>
+            <p>
+              The extension checks Google accessibility at the configured interval and caches the result for fast performance.
+            </p>
+          </details>
         </div>
       </div>
 
-      <div class="actions-section">
-        <button id="checkNowBtn" class="btn btn-primary">
-          <span class="btn-icon">🔄</span>
-          Check Now
-        </button>
-      </div>
-
-      <div class="manual-override-section">
-        <label class="toggle-label">
-          <input type="checkbox" id="manualOverrideToggle">
-          <span class="toggle-slider"></span>
-          <span class="toggle-text">Manual Override (Force Baidu)</span>
-        </label>
-      </div>
-
-      <div class="help-section">
-        <details>
-          <summary>How it works</summary>
-          <p>
-            This extension automatically detects if Google is accessible and routes your searches accordingly:
-          </p>
-          <ul>
-            <li><strong>Google accessible:</strong> Searches go directly to Google</li>
-            <li><strong>Google blocked:</strong> Searches are redirected to Baidu</li>
-          </ul>
-          <p>
-            The extension checks Google accessibility every 60 seconds and caches the result for fast performance.
-          </p>
-        </details>
+      <div id="tab-settings" class="tab-panel">
+        <div class="settings-section">
+          <div class="settings-row">
+            <label for="fallbackEngineSelect" class="settings-label">Fallback engine</label>
+            <select id="fallbackEngineSelect" class="settings-select">
+              <option value="baidu">Baidu</option>
+              <option value="bing">Bing</option>
+              <option value="360">360 Search</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <label for="checkInterval" class="settings-label">Check interval</label>
+            <div class="settings-control">
+              <input type="number" id="checkInterval" min="60" max="3600" step="60" value="60">
+              <span class="settings-unit">sec</span>
+            </div>
+          </div>
+        </div>
+        <button id="applySettingsBtn" class="btn btn-primary">Apply</button>
       </div>
     </main>
 

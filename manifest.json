@@ -3,7 +3,7 @@
   "name": "Smart Search Router",
   "short_name": "Smart Search",
   "version": "1.0.0",
-  "description": "Automatically routes your searches to Google or Baidu based on real-time network accessibility. Perfect for users in regions where Google availability varies.",
+  "description": "Automatically routes your searches to Google or Baidu based on real-time network accessibility.",
   "author": "Stuart Luo",
   "homepage_url": "https://github.com/Stuart0l/SmartSearch-ChromeExt",
   "permissions": [
